@@ -12,7 +12,7 @@ public class Booking {
     private static List<Passenger> unreserved = new ArrayList<>();
     private static int ticketCounter = 1;
     private static final Queue<Passenger> upgradeQueue = new LinkedList<>(); // Queue for upgrades
-    private static int lowerBerthSize = 2;
+    private static int lowerBerthSize = 1;
     private static int middleBerthSize = 1;
     private static int upperBerthSize = 1;
     private static int waitingListSize = 1;
@@ -62,10 +62,15 @@ public class Booking {
         }
 
     private static void addToUnreserved(Passenger passenger) {
-        String urLabel = "UR" + (unreserved.size() + 1);
-        passenger.setTicketId(generateTicketId());
-        unreserved.add(passenger);
-        System.out.println("Ticket booked in UnReserved " + urLabel + ". Status: Confirm."+"\n"+" Ticket ID: " + passenger.getTicketId());
+        if (unreserved.size() < unreservedSize) {
+            String urLabel = "UR" + (unreserved.size() + 1);
+            passenger.setTicketId(generateTicketId());
+            unreserved.add(passenger);
+            System.out.println("Ticket booked in UnReserved " + urLabel + ". Status: Confirm." + "\n" + " Ticket ID: " + passenger.getTicketId());
+        }
+        else{
+            System.out.println("All Tickets are Booked!!!");
+        }
     }
 
     private static void addToWaitingList(Passenger passenger) {
@@ -119,41 +124,10 @@ public class Booking {
             if (passenger.getTicketId().equalsIgnoreCase(ticketId)) {
                 unreserved.remove(passenger);
                 System.out.println("Ticket ID: " + passenger.getTicketId() + " canceled from UnReserved.");
-                autoUpgradeWaitingList();
                 break;
             }
         }
 
-
-//        if (canceledPassenger != null) {
-//            autoUpgradeLowerBerth();
-////            // Check in middle berth (if canceled passenger was in lower berth)
-////            if (canceledPassenger.getBerthPreference().equalsIgnoreCase("lower")) {
-////            }
-////            // Check in upper berth (if canceled passenger was in lower berth)
-////            if (canceledPassenger.getBerthPreference().equalsIgnoreCase("lower")) {
-////            }
-////            if (canceledPassenger.getBerthPreference().equalsIgnoreCase("waiting")) {
-////            }
-//////            // Check if waiting list needs to be upgraded to lower berth
-//////            if (lowerBerth.size() < lowerBerthSize && !upgradeQueue.isEmpty()) {
-//////                Passenger upgradedPassenger = upgradeQueue.poll();
-//////                upgradedPassenger.setTicketId(generateTicketId());
-//////                lowerBerth.add(upgradedPassenger);
-//////                System.out.println("Upgraded " + upgradedPassenger.getName() + "  Status: Confirm. Ticket ID: " + upgradedPassenger.getTicketId());
-//////            }else if (middleBerth.size() < middleBerthSize && !upgradeQueue.isEmpty()) {
-//////                Passenger upgradedPassenger = upgradeQueue.poll();
-//////                upgradedPassenger.setTicketId(generateTicketId());
-//////                middleBerth.add(upgradedPassenger);
-//////                System.out.println("Upgraded " + upgradedPassenger.getName() + "  Status: Confirm. Ticket ID: " + upgradedPassenger.getTicketId());
-//////            }else if (upperBerth.size() < upperBerthSize && !upgradeQueue.isEmpty()) {
-//////                Passenger upgradedPassenger = upgradeQueue.poll();
-//////                upgradedPassenger.setTicketId(generateTicketId());
-//////                upperBerth.add(upgradedPassenger);
-//////                System.out.println("Upgraded " + upgradedPassenger.getName() + "  Status: Confirm. Ticket ID: " + upgradedPassenger.getTicketId());
-//////            }
-//            return true;
-//        }
         return true;
     }
     public static void autoUpgradeLowerBerth() {
@@ -213,10 +187,10 @@ public class Booking {
     }
     public static void checkTicketStatus(String ticketId) {
         // Check if waiting list needs to be upgraded to lower berth
-        if (lowerBerth.size() < lowerBerthSize && !upgradeQueue.isEmpty()) {
+        if (waitingList.size() < waitingListSize && !upgradeQueue.isEmpty()) {
             Passenger upgradedPassenger = upgradeQueue.poll();
             upgradedPassenger.setTicketId(generateTicketId());
-            lowerBerth.add(upgradedPassenger);
+            waitingList.add(upgradedPassenger);
             System.out.println("Upgraded " + upgradedPassenger.getName() + " from Waiting List to Lower Berth. Status: Confirm. Ticket ID: " + upgradedPassenger.getTicketId());
         }
         for (Passenger passenger : lowerBerth) {
